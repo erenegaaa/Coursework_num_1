@@ -2,39 +2,37 @@
 Модуль для чтения Excel,
 что в дальнейшем будет использоваться для Json файла транзакций.
 """
-
-from typing import List, Dict, Any
 import json
 import logging
-from datetime import datetime
-import pandas as pd
 import re
+from typing import Any, Dict, List, Optional, Union
 
+import pandas as pd
 
 logger = logging.getLogger(__name__)
 logger.addHandler(logging.NullHandler())
 
 
-def read_transaction_from_excel(path: str, sheet_name: str=0) -> pd.DataFrame:
+def read_transactions_from_excel(path: str, sheet_name: Union[str, int] = 0) -> pd.DataFrame:
     """Считывание транзакции из excel файла"""
-    logger.info("Чтение транзакции из %s (sheet=%s)")
+    logger.info("Чтение транзакции из %s (sheet=%s)", path, sheet_name)
     df = pd.read_excel(path, sheet_name=sheet_name)
-    df.columns = [c.strip() if isinstance(c, str) else c for c in df.columns] # один регистр
+    df.columns = [c.strip() if isinstance(c, str) else str(c) for c in df.columns]  # Исправлено
     return df
 
 
 def df_to_json_serializable(df: pd.DataFrame) -> List[Dict[str, Any]]:
     """Преобразование Dataframe в список словарей для json"""
-    result = []
+    result: List[Dict[str, Any]] = []  # Явно указываем тип
     for _, row in df.iterrows():
-        obj = {}
+        obj: Dict[str, Any] = {}
         for col, value in row.items():
-            if isinstance(value, (pd.Timestamp, pd.DataFrame)):
-                obj[col] = value.strftime("%Y-%m-%d %H:%M:%S")
+            if isinstance(value, pd.Timestamp):
+                obj[str(col)] = value.strftime("%Y-%m-%d %H:%M:%S")  # Исправлено: str(col)
             elif pd.isna(value):
-                obj[col] = None
+                obj[str(col)] = None  # Исправлено: str(col)
             else:
-                obj[col] = value
+                obj[str(col)] = value  # Исправлено: str(col)
         result.append(obj)
     return result
 
@@ -48,9 +46,9 @@ def dumps_json(obj: Any, ensure_ascii: bool = False) -> str:
 PHONE_RE = re.compile(r'(\+?\d{1,3}[\s\-]?)?(\(?\d{3,4}\)?[\s\-]?)?[\d\-\s]{5,}')
 
 
-def extract_phone(text: str) -> str | None:
+def extract_phone(text: Optional[str]) -> Optional[str]:
     """Поиск номера телефона в тексте транзакции"""
-    if not isinstance(text, str):
+    if not text or not isinstance(text, str):
         return None
     m = PHONE_RE.search(text)
     if m:

@@ -1,23 +1,10 @@
-import os
-import requests
-import dotenv
-dotenv.load_dotenv()
-API_KEY = os.getenv("API_KEY")
+from typing import Dict, Union
 
-if not API_KEY:
-    raise ValueError("API_KEY not found. Add it to your .env file.")
 
-url = "https://api.apilayer.com/exchangerates_data/convert"
-
-params = {
-    "from": "USD",
-    "to": "EUR",
-    "amount": 10
-}
-
-headers = {
-    "apikey": API_KEY
-}
-
-response = requests.get(url, params=params, headers=headers)
-print(response.json())
+def some_function() -> Dict[str, Union[str, int, float, None]]:
+    params: Dict[str, Union[str, int, float, None]] = {
+        "key1": "value1",
+        "key2": 123,
+        "key3": None
+    }
+    return params
