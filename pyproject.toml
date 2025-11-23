@@ -46,6 +46,7 @@ trove-classifiers = "==2025.8.26.11"
 tomlkit = "==0.13.3"
 shellingham = "==1.5.4"
 python-dotenv = "^1.2.1"
+pandas = "^2.3.3"
 
 [tool.black]
 line-length = 119
