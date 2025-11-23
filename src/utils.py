@@ -23,9 +23,20 @@ def read_transaction_from_excel(path: str, sheet_name: str=0) -> pd.DataFrame:
     return df
 
 
-def df_to_json_serializable():
+def df_to_json_serializable(df: pd.DataFrame) -> List[Dict[str, Any]]:
     """Преобразование Dataframe в список словарей для json"""
-    pass
+    result = []
+    for _, row in df.iterrows():
+        obj = {}
+        for col, value in row.items():
+            if isinstance(value, (pd.Timestamp, pd.DataFrame)):
+                obj[col] = value.strftime("%Y-%m-%d %H:%M:%S")
+            elif pd.isna(value):
+                obj[col] = None
+            else:
+                obj[col] = value
+        result.append(obj)
+    return result
 
 
 def dumps_json():
