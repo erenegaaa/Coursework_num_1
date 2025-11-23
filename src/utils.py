@@ -39,9 +39,10 @@ def df_to_json_serializable(df: pd.DataFrame) -> List[Dict[str, Any]]:
     return result
 
 
-def dumps_json():
-    """обертка json файла"""
-    pass
+def dumps_json(obj: Any, ensure_ascii: bool = False) -> str:
+    """Обертка json файла"""
+    logger.debug("Перепись файла в JSON формат")
+    return json.dumps(obj, ensure_ascii=ensure_ascii, indent=2)
 
 
 def extract_phone():
