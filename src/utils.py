@@ -45,6 +45,17 @@ def dumps_json(obj: Any, ensure_ascii: bool = False) -> str:
     return json.dumps(obj, ensure_ascii=ensure_ascii, indent=2)
 
 
-def extract_phone():
+PHONE_RE = re.compile(r'(\+?\d{1,3}[\s\-]?)?(\(?\d{3,4}\)?[\s\-]?)?[\d\-\s]{5,}')
+
+
+def extract_phone(text: str) -> str | None:
     """Поиск номера телефона в тексте транзакции"""
-    pass
+    if not isinstance(text, str):
+        return None
+    m = PHONE_RE.search(text)
+    if m:
+        phone = m.group(0)
+        cleaned = re.sub(r'[^\d+]', '', phone)
+        logger.debug("Извлечен номер телефона %s из файла %s", cleaned, text)
+        return cleaned
+    return None
